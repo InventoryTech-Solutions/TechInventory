@@ -1,0 +1,16 @@
+# Archivos de la IDE y editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Variables de entorno globales
+.env
+.env.local
