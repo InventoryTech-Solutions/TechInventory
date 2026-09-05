@@ -1,0 +1,21 @@
+<nav class="navbar">
+  <div class="brand">
+    <span>📦 Control Stock</span>
+  </div>
+
+  <div class="nav-links">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Catálogo</a>
+    @if (authService.isLoggedIn()) {
+      <a routerLink="/gestion" routerLinkActive="active">Gestión de Inventario</a>
+    }
+  </div>
+
+  <div class="auth-section">
+    @if (authService.isLoggedIn()) {
+      <span class="user-name">👤 {{ usuarioNombre }}</span>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    } @else {
+      <button class="btn-login" (click)="iniciarSesion()">Iniciar Sesión</button>
+    }
+  </div>
+</nav>

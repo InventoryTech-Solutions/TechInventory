@@ -1,0 +1,3 @@
+INSERT INTO productos (sku, nombre, categoria, precio, stock) VALUES ('SKU-1001', 'Smartphone Pro Max 128GB', 'Celulares', 899.99, 15);
+INSERT INTO productos (sku, nombre, categoria, precio, stock) VALUES ('SKU-1002', 'Laptop Gamer 16GB RAM', 'Computadores', 1299.50, 8);
+INSERT INTO productos (sku, nombre, categoria, precio, stock) VALUES ('SKU-1003', 'Audífonos Bluetooth Noise Cancelling', 'Accesorios', 199.00, 30);

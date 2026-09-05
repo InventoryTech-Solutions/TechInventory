@@ -1,0 +1,38 @@
+<div class="catalogo-container">
+  <h2>Catálogo de Productos</h2>
+
+  <!-- Barra de Filtros -->
+  <div class="filtros-bar">
+    <input 
+      type="text" 
+      placeholder="Buscar producto..." 
+      [(ngModel)]="filtroTexto" 
+      class="search-input"
+    />
+
+    <select [(ngModel)]="categoriaSeleccionada" class="category-select">
+      @for (cat of categorias; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
+    </select>
+  </div>
+
+  <!-- Grilla de Tarjetas -->
+  <div class="grid-productos">
+    @for (producto of productosFiltrados; track producto.id) {
+      <div class="card-producto">
+        <img [src]="producto.imagenUrl" [alt]="producto.nombre" class="card-img" />
+        <div class="card-body">
+          <span class="badge">{{ producto.categoria }}</span>
+          <h3>{{ producto.nombre }}</h3>
+          <p class="precio">${{ producto.precio }}</p>
+          <p class="stock" [class.sin-stock]="producto.stock === 0">
+            Stock: {{ producto.stock > 0 ? producto.stock + ' unidades' : 'Agotado' }}
+          </p>
+        </div>
+      </div>
+    } @empty {
+      <p class="no-results">No se encontraron productos que coincidan con la búsqueda.</p>
+    }
+  </div>
+</div>

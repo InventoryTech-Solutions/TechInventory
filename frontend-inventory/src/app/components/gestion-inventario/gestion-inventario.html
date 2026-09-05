@@ -1,0 +1,92 @@
+<div class="gestion-container">
+  <div class="header-section">
+    <h2>⚙️ Gestión de Inventario</h2>
+    <button class="btn-primary" (click)="abrirFormularioNuevo()">+ Agregar Producto</button>
+  </div>
+
+  <!-- Formulario Modal / En línea -->
+  @if (mostrarFormulario) {
+    <div class="form-card">
+      <h3>{{ editando ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
+      <form (ngSubmit)="guardarProducto()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nombre del Producto *</label>
+            <input type="text" [(ngModel)]="productoForm.nombre" name="nombre" required />
+          </div>
+
+          <div class="form-group">
+            <label>Categoría</label>
+            <select [(ngModel)]="productoForm.categoria" name="categoria">
+              @for (cat of categorias; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Precio ($) *</label>
+            <input type="number" [(ngModel)]="productoForm.precio" name="precio" min="0" required />
+          </div>
+
+          <div class="form-group">
+            <label>Stock Disponible *</label>
+            <input type="number" [(ngModel)]="productoForm.stock" name="stock" min="0" required />
+          </div>
+
+          <div class="form-group full-width">
+            <label>URL Imagen</label>
+            <input type="text" [(ngModel)]="productoForm.imagenUrl" name="imagenUrl" placeholder="https://ejemplo.com/imagen.jpg" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">{{ editando ? 'Actualizar' : 'Guardar' }}</button>
+          <button type="button" class="btn-secondary" (click)="cerrarFormulario()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- Tabla de Productos -->
+  <div class="table-responsive">
+    <table class="inventory-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Producto</th>
+          <th>Categoría</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (prod of productos; track prod.id) {
+          <tr>
+            <td>{{ prod.id }}</td>
+            <td class="prod-name">
+              <img [src]="prod.imagenUrl" [alt]="prod.nombre" class="thumb-img" />
+              <span>{{ prod.nombre }}</span>
+            </td>
+            <td><span class="badge">{{ prod.categoria }}</span></td>
+            <td>${{ prod.precio }}</td>
+            <td [class.low-stock]="prod.stock < 5">
+              {{ prod.stock }}
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-edit" (click)="editarProducto(prod)">✏️ Editar</button>
+                <button class="btn-delete" (click)="eliminarProducto(prod.id)">🗑️ Eliminar</button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="no-data">No hay productos registrados en el inventario.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

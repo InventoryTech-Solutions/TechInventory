@@ -1,0 +1,59 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1e1e2d;
+  padding: 1rem 2rem;
+  color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.brand {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: #a2a3b7;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: #ffffff;
+}
+
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  color: #00d284;
+}
+
+button {
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-login {
+  background-color: #3699ff;
+  color: white;
+}
+
+.btn-logout {
+  background-color: #f64e60;
+  color: white;
+}
