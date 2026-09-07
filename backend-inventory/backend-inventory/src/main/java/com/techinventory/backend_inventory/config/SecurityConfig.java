@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,49 +22,37 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Deshabilitar CSRF ya que usamos una API REST Stateless con tokens JWT
+            // 1. Deshabilitar CSRF para APIs REST
             .csrf(csrf -> csrf.disable())
 
-            // 2. Habilitar la configuración de CORS para peticiones desde Angular
+            // 2. Habilitar CORS con configuración global
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-            // 3. Manejo de Sesión de tipo Stateless (Sin estado en servidor)
+            // 3. Manejo de sesión Stateless
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-            // 4. Reglas de Autorización de Endpoints (Rúbrica EV1)
+            // 4. Permitir rutas locales de pruebas y H2
             .authorizeHttpRequests(auth -> auth
-                // Endpoint Público: Accesible sin token (Consulta de catálogo)
-                .requestMatchers("/api/public/**").permitAll()
-                
-                // Permitir acceso a la consola de H2 local
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight CORS
+                .requestMatchers("/api/public/**", "/api/productos/**", "/api/inventario/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
+                .anyRequest().permitAll() // Permitir todo temporalmente en local
+            );
 
-                // Endpoints Protegidos de Escritura (Crear movimientos/despachos)
-                .requestMatchers(HttpMethod.POST, "/api/inventario/**").authenticated()
-
-                // Endpoints Protegidos de Lectura (Detalle de productos/stock)
-                .requestMatchers(HttpMethod.GET, "/api/inventario/**").authenticated()
-
-                // Cualquier otra ruta requiere autenticación por defecto
-                .anyRequest().authenticated()
-            )
-
-            // 5. Configurar el servidor como OAuth2 Resource Server para validar JWT
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
-
-        // Permitir marcos para visualizar la consola H2 localmente
+        // Permitir frames para la consola de la BD H2
         http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();
     }
 
-    // Configuración global de CORS para permitir la conexión desde la SPA Angular
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost")); // URL habitual de Angular
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        
+        // Permite cualquier puerto dinámico local (incluyendo 64653 y 4200)
+        config.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*")); 
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

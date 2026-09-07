@@ -1,14 +1,2 @@
 <app-navbar></app-navbar>
-
-<main style="padding: 2rem;">
-  @if (!authService.isLoggedIn()) {
-    <div style="text-align: center; margin-top: 3rem;">
-      <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">Bienvenido al Sistema de Inventario</h1>
-      <p style="color: #6b7280;">Inicia sesión con tu cuenta de Microsoft Entra ID para acceder al catálogo.</p>
-    </div>
-  }
-
-  @if (authService.isLoggedIn()) {
-    <router-outlet></router-outlet>
-  }
-</main>
+<router-outlet></router-outlet>

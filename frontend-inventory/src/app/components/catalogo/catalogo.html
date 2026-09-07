@@ -1,12 +1,20 @@
 <div class="catalogo-container">
-  <h2>Catálogo de Productos</h2>
+  
+  <!-- Header: Título a la izquierda, Botón Carrito a la derecha -->
+  <div class="catalogo-header">
+    <h2>Catálogo de Productos</h2>
+    
+    <button class="carrito-btn" (click)="abrirCarrito()">
+      🛒 Carrito: <strong>{{ totalItemsCarrito }}</strong> {{ totalItemsCarrito === 1 ? 'producto' : 'productos' }}
+    </button>
+  </div>
 
-  <!-- Barra de Filtros -->
+  <!-- Barra de Filtros (Ancho Completo) -->
   <div class="filtros-bar">
-    <input 
-      type="text" 
+    <input
+      type="text"
       placeholder="Buscar producto..." 
-      [(ngModel)]="filtroTexto" 
+      [(ngModel)]="filtroTexto"
       class="search-input"
     />
 
@@ -17,15 +25,19 @@
     </select>
   </div>
 
-  <!-- Grilla de Tarjetas -->
+  <!-- Grilla de Productos Ampliada -->
   <div class="grid-productos">
     @for (producto of productosFiltrados; track producto.id) {
-      <div class="card-producto">
+      <div
+        class="card-producto"
+        (click)="seleccionarProducto(producto)"
+        [class.seleccionado]="productoSeleccionado?.id === producto.id"
+      >
         <img [src]="producto.imagenUrl" [alt]="producto.nombre" class="card-img" />
         <div class="card-body">
           <span class="badge">{{ producto.categoria }}</span>
           <h3>{{ producto.nombre }}</h3>
-          <p class="precio">${{ producto.precio }}</p>
+          <p class="precio">{{ producto.precio | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</p>
           <p class="stock" [class.sin-stock]="producto.stock === 0">
             Stock: {{ producto.stock > 0 ? producto.stock + ' unidades' : 'Agotado' }}
           </p>
@@ -35,4 +47,79 @@
       <p class="no-results">No se encontraron productos que coincidan con la búsqueda.</p>
     }
   </div>
+
+  <!-- Modal Detalle del Producto -->
+  @if (productoSeleccionado) {
+    <div class="modal-overlay" (click)="cerrarModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <button class="btn-close" (click)="cerrarModal()">&times;</button>
+        
+        <img [src]="productoSeleccionado.imagenUrl" [alt]="productoSeleccionado.nombre" class="modal-img" />
+        
+        <span class="badge">{{ productoSeleccionado.categoria }}</span>
+        <h2>{{ productoSeleccionado.nombre }}</h2>
+        <p class="precio">{{ productoSeleccionado.precio | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</p>
+        <p class="stock" [class.sin-stock]="productoSeleccionado.stock === 0">
+          Stock disponible: {{ productoSeleccionado.stock > 0 ? productoSeleccionado.stock + ' unidades' : 'Agotado' }}
+        </p>
+
+        <div class="modal-acciones">
+          <button class="btn-secundario" (click)="cerrarModal()">Cerrar</button>
+          <button 
+            class="btn-primario" 
+            [disabled]="productoSeleccionado.stock === 0"
+            (click)="agregarAlCarrito(productoSeleccionado)"
+          >
+            Añadir al Carrito 🛒
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal del Carrito de Compras -->
+  @if (mostrarCarritoModal) {
+    <div class="modal-overlay" (click)="cerrarCarrito()">
+      <div class="modal-content modal-carrito" (click)="$event.stopPropagation()">
+        <button class="btn-close" (click)="cerrarCarrito()">&times;</button>
+        
+        <h2>🛒 Tu Carrito de Compras</h2>
+
+        @if (carrito.length === 0) {
+          <p class="carrito-vacio">El carrito está vacío por el momento.</p>
+        } @else {
+          <div class="lista-carrito">
+            @for (item of carrito; track item.producto.id) {
+              <div class="item-carrito">
+                <div>
+                  <strong>{{ item.producto.nombre }}</strong>
+                  <p class="item-detalles">
+                    {{ item.cantidad }} x {{ item.producto.precio | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }} = {{ (item.cantidad * item.producto.precio) | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}
+                  </p>
+                </div>
+                <button class="btn-eliminar" (click)="eliminarDelCarrito(item.producto.id)" title="Eliminar producto">
+                  🗑️
+                </button>
+              </div>
+            }
+          </div>
+
+          <div class="total-seccion">
+            <h3>Total: {{ precioTotalCarrito | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</h3>
+          </div>
+        }
+
+        <div class="modal-acciones">
+          <button class="btn-secundario" (click)="cerrarCarrito()">Seguir Comprando</button>
+          <button 
+            class="btn-primario" 
+            [disabled]="carrito.length === 0" 
+            (click)="finalizarPedido()"
+          >
+            Confirmar Reserva
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

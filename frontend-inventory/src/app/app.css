@@ -2,6 +2,86 @@
   display: block;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   min-height: 100vh;
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: #0a0f1d;
+  color: #f8fafc;
+}
+
+/* Estilos de la Barra Superior (Header / Navbar) */
+.navbar, .header, header, nav {
+  background: rgba(19, 11, 31, 0.95) !important;
+  border-bottom: 2px solid #a855f7 !important;
+  box-shadow: 0 4px 25px rgba(168, 85, 247, 0.4) !important;
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+
+/* Marca / Nombre de la tienda (TechInventory) */
+.brand, .navbar-brand, .logo, header h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #f3e8ff !important;
+  text-shadow: 0 0 12px rgba(168, 85, 247, 0.9), 0 0 22px rgba(168, 85, 247, 0.5);
+  letter-spacing: 0.5px;
+}
+
+/* Enlaces de navegación */
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: #c084fc;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: #ffffff;
+  text-shadow: 0 0 8px #a855f7;
+}
+
+/* Sección de Usuario */
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-name, .user-info, header span {
+  font-size: 0.9rem;
+  color: #e9d5ff !important;
+  font-weight: 600;
+}
+
+/* Botones del Navbar */
+button {
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-login {
+  background-color: #3699ff;
+  color: white;
+}
+
+.btn-logout {
+  background: rgba(168, 85, 247, 0.2) !important;
+  color: #f3e8ff !important;
+  border: 1px solid #a855f7 !important;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+}
+
+.btn-logout:hover {
+  background: #a855f7 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.7);
 }

@@ -30,6 +30,18 @@ public class InventarioService {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con el ID: " + id));
     }
 
+    // Nuevo método para CREAR/ACTUALIZAR
+    @Transactional
+    public Producto guardarProducto(Producto producto) {
+        return productoRepository.save(producto);
+    }
+
+    // Nuevo método para ELIMINAR
+    @Transactional
+    public void eliminarProducto(Long id) {
+        productoRepository.deleteById(id);
+    }
+
     @Transactional
     public MovimientoInventario registrarMovimiento(Long productoId, Integer cantidad, String tipo, String ubicacion) {
         Producto producto = obtenerProductoPorId(productoId);

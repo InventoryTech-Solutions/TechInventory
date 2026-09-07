@@ -1,1 +1,47 @@
-/* You can add global styles to this file, and also import other style files */
+/* Estilos Globales para la Barra Superior (Navbar) */
+
+header, nav, .navbar {
+  background: rgba(19, 11, 31, 0.95) !important;
+  border-bottom: 2px solid #a855f7 !important;
+  box-shadow: 0 4px 25px rgba(168, 85, 247, 0.4) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Nombre de la aplicación (TechInventory) */
+header .brand, 
+header h1, 
+.navbar-brand, 
+.brand {
+  color: #f3e8ff !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 12px rgba(168, 85, 247, 0.9), 0 0 22px rgba(168, 85, 247, 0.5) !important;
+}
+
+/* Texto del usuario logueado ("Hola, LISETT...") */
+header .user-name, 
+header .user-info, 
+header span, 
+header p {
+  color: #e9d5ff !important;
+  font-weight: 600 !important;
+}
+
+/* Botón Cerrar Sesión */
+header button, 
+.btn-logout {
+  background: rgba(168, 85, 247, 0.2) !important;
+  color: #f3e8ff !important;
+  border: 1px solid #a855f7 !important;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2) !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 1rem !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+header button:hover, 
+.btn-logout:hover {
+  background: #a855f7 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.8) !important;
+}

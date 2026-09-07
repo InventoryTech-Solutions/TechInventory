@@ -1,34 +1,51 @@
+/* Layout Principal */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1e1e2d;
-  padding: 1rem 2rem;
-  color: #ffffff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  padding: 0.8rem 2rem;
+  background: rgba(19, 11, 31, 0.9);
+  border-bottom: 2px solid #a855f7;
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.35);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
+/* Marca / Logo */
 .brand {
   font-size: 1.25rem;
-  font-weight: bold;
+  font-weight: 800;
+  color: #f3e8ff;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.4);
 }
 
+/* Enlaces de Navegación */
 .nav-links {
   display: flex;
   gap: 1.5rem;
+  align-items: center;
 }
 
 .nav-links a {
   color: #a2a3b7;
   text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
 }
 
-.nav-links a:hover, .nav-links a.active {
-  color: #ffffff;
+.nav-links a:hover,
+.nav-links a.active {
+  color: #f3e8ff;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  text-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
 }
 
+/* Sección Autenticación / Usuario */
 .auth-section {
   display: flex;
   align-items: center;
@@ -37,23 +54,40 @@
 
 .user-name {
   font-size: 0.9rem;
-  color: #00d284;
+  font-weight: 600;
+  color: #e9d5ff;
 }
 
-button {
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
+/* Botones */
+.btn-login,
+.btn-logout {
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .btn-login {
-  background-color: #3699ff;
-  color: white;
+  background: rgba(54, 153, 255, 0.15);
+  color: #3699ff;
+  border: 1px solid #3699ff;
+}
+
+.btn-login:hover {
+  background: #3699ff;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(54, 153, 255, 0.5);
 }
 
 .btn-logout {
-  background-color: #f64e60;
-  color: white;
+  background: rgba(168, 85, 247, 0.15);
+  color: #f3e8ff;
+  border: 1px solid #a855f7;
+}
+
+.btn-logout:hover {
+  background: #a855f7;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
 }

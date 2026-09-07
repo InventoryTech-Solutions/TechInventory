@@ -1,0 +1,62 @@
+<div class="modal-overlay" (click)="onCerrar()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ productoEditar ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
+      <button class="btn-close" (click)="onCerrar()">&times;</button>
+    </div>
+
+    <form [formGroup]="productoForm" (ngSubmit)="onSubmit()" class="modal-body">
+      <div class="form-group">
+        <label>Nombre del Producto</label>
+        <input type="text" formControlName="nombre" placeholder="Ej: Laptop Pro 15" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Categoría</label>
+          <select formControlName="categoria">
+            <option value="Electrónica">Electrónica</option>
+            <option value="Accesorios">Accesorios</option>
+            <option value="Periféricos">Periféricos</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Precio (CLP)</label>
+          <input type="number" formControlName="precio" placeholder="0" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Stock Actual</label>
+          <input type="number" formControlName="stockActual" placeholder="0" />
+        </div>
+
+        <div class="form-group">
+          <label>Código de Barras</label>
+          <input type="text" formControlName="codigoBarras" placeholder="7801234567" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ubicación Bodega</label>
+          <input type="text" formControlName="ubicacionBodega" placeholder="Pasillo 3, Estante B" />
+        </div>
+
+        <div class="form-group">
+          <label>URL Imagen</label>
+          <input type="text" formControlName="imagenUrl" placeholder="https://..." />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secundario" (click)="onCerrar()">Cancelar</button>
+        <button type="submit" class="btn-primario" [disabled]="productoForm.invalid">
+          {{ productoEditar ? 'Actualizar' : 'Guardar Producto' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,89 +1,107 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Producto } from '../catalogo/catalogo';
+import { InventarioService } from '../../services/inventario.service';
+import { Producto } from '../../models/producto.model';
+import { TablaInventarioComponent } from '../tabla-inventario/tabla-inventario';
+import { ModalProductoComponent } from '../modal-producto/modal-producto';
 
 @Component({
   selector: 'app-gestion-inventario',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TablaInventarioComponent, ModalProductoComponent],
   templateUrl: './gestion-inventario.html',
   styleUrl: './gestion-inventario.css'
 })
 export class GestionInventarioComponent implements OnInit {
-  // Lista inicial de datos (mock)
-  productos: Producto[] = [
-    { id: 1, nombre: 'Laptop Pro 15"', categoria: 'Electrónica', precio: 1200, stock: 8, imagenUrl: 'https://via.placeholder.com/150' },
-    { id: 2, nombre: 'Teclado Mecánico RGB', categoria: 'Accesorios', precio: 85, stock: 15, imagenUrl: 'https://via.placeholder.com/150' },
-    { id: 3, nombre: 'Monitor 4K 27"', categoria: 'Electrónica', precio: 350, stock: 4, imagenUrl: 'https://via.placeholder.com/150' },
-    { id: 4, nombre: 'Mouse Inalámbrico', categoria: 'Accesorios', precio: 45, stock: 20, imagenUrl: 'https://via.placeholder.com/150' },
-    { id: 5, nombre: 'Silla Ergonómica', categoria: 'Oficina', precio: 250, stock: 2, imagenUrl: 'https://via.placeholder.com/150' }
-  ];
+  productos: Producto[] = [];
+  filtroTexto: string = '';
+  filtroEstado: string = 'TODOS';
+  
+  mostrarModal: boolean = false;
+  productoEditar: Producto | null = null;
 
-  categorias: string[] = ['Electrónica', 'Accesorios', 'Oficina'];
+  constructor(private inventarioService: InventarioService) {}
 
-  // Estado del formulario
-  mostrarFormulario: boolean = false;
-  editando: boolean = false;
-
-  productoForm: Producto = this.getProductoVacio();
-
-  ngOnInit(): void {}
-
-  private getProductoVacio(): Producto {
-    return {
-      id: 0,
-      nombre: '',
-      categoria: 'Electrónica',
-      precio: 0,
-      stock: 0,
-      imagenUrl: ''
-    };
+  ngOnInit(): void {
+    this.cargarProductos();
   }
 
-  abrirFormularioNuevo(): void {
-    this.editando = false;
-    this.productoForm = this.getProductoVacio();
-    this.mostrarFormulario = true;
+  cargarProductos(): void {
+    this.inventarioService.getProductos().subscribe({
+      next: (data) => this.productos = data,
+      error: (err) => console.error('Error al cargar inventario', err)
+    });
   }
 
-  editarProducto(prod: Producto): void {
-    this.editando = true;
-    this.productoForm = { ...prod }; // Clonamos para evitar modificar la lista directamente
-    this.mostrarFormulario = true;
+  // KPIs
+  get totalProductos(): number {
+    return this.productos.length;
   }
 
-  guardarProducto(): void {
-    if (!this.productoForm.nombre || this.productoForm.precio <= 0) {
-      alert('Por favor ingrese un nombre y precio válidos.');
-      return;
-    }
+  get totalStockCritico(): number {
+    return this.productos.filter(p => (p.stockActual ?? 0) < 10).length;
+  }
 
-    if (this.editando) {
-      const idx = this.productos.findIndex(p => p.id === this.productoForm.id);
-      if (idx !== -1) {
-        this.productos[idx] = { ...this.productoForm };
-      }
+  get valorTotalInventario(): number {
+    return this.productos.reduce((acc, p) => acc + (p.precio * (p.stockActual ?? 0)), 0);
+  }
+
+  // Filtrado
+  get productosFiltrados(): Producto[] {
+    return this.productos.filter(p => {
+      const coincideTexto = p.nombre.toLowerCase().includes(this.filtroTexto.toLowerCase());
+      const stock = p.stockActual ?? 0;
+      
+      let coincideEstado = true;
+      if (this.filtroEstado === 'CRITICO') coincideEstado = stock > 0 && stock < 10;
+      else if (this.filtroEstado === 'AGOTADO') coincideEstado = stock === 0;
+
+      return coincideTexto && coincideEstado;
+    });
+  }
+
+  // Operaciones CRUD
+  abrirModalCrear(): void {
+    this.productoEditar = null;
+    this.mostrarModal = true;
+  }
+
+  abrirModalEditar(producto: Producto): void {
+    this.productoEditar = producto;
+    this.mostrarModal = true;
+  }
+
+  cerrarModal(): void {
+    this.mostrarModal = false;
+    this.productoEditar = null;
+  }
+
+  guardarProducto(datos: Partial<Producto>): void {
+    if (this.productoEditar && this.productoEditar.id !== undefined) {
+      this.inventarioService.actualizarProducto(this.productoEditar.id, datos).subscribe(() => {
+        this.cargarProductos();
+        this.cerrarModal();
+      });
     } else {
-      const nuevoId = this.productos.length > 0 ? Math.max(...this.productos.map(p => p.id)) + 1 : 1;
-      this.productos.push({
-        ...this.productoForm,
-        id: nuevoId,
-        imagenUrl: this.productoForm.imagenUrl || 'https://via.placeholder.com/150'
+      this.inventarioService.crearProducto(datos).subscribe(() => {
+        this.cargarProductos();
+        this.cerrarModal();
       });
     }
+  }
 
-    this.cerrarFormulario();
+  actualizarStockEvento(event: { id: number; nuevoStock: number }): void {
+    this.inventarioService.actualizarStock(event.id, event.nuevoStock).subscribe(() => {
+      this.cargarProductos();
+    });
   }
 
   eliminarProducto(id: number): void {
-    if (confirm('¿Está seguro de eliminar este producto del inventario?')) {
-      this.productos = this.productos.filter(p => p.id !== id);
+    if (confirm('¿Seguro que deseas eliminar este producto del inventario?')) {
+      this.inventarioService.eliminarProducto(id).subscribe(() => {
+        this.cargarProductos();
+      });
     }
-  }
-
-  cerrarFormulario(): void {
-    this.mostrarFormulario = false;
-    this.productoForm = this.getProductoVacio();
   }
 }

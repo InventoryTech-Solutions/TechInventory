@@ -1,0 +1,52 @@
+<div class="tabla-container">
+  <table class="inventario-tabla">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Producto</th>
+        <th>Categoría</th>
+        <th>Precio Unitario</th>
+        <th>Stock Actual</th>
+        <th>Estado Stock</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (prod of productos; track prod.id) {
+        <tr>
+          <td>#{{ prod.id }}</td>
+          <td class="col-nombre">
+            <img [src]="prod.imagenUrl || 'https://via.placeholder.com/40'" [alt]="prod.nombre" class="thumb-img" />
+            <span>{{ prod.nombre }}</span>
+          </td>
+          <td><span class="badge-cat">{{ prod.categoria }}</span></td>
+          <td class="col-precio">{{ prod.precio | currency:'CLP':'symbol-narrow':'1.0-0':'es-CL' }}</td>
+          <td class="col-stock">
+            <div class="stock-controls">
+              <button class="btn-qty" (click)="modificarCantidad(prod, -1)">-</button>
+              <span class="qty-num">{{ prod.stockActual }}</span>
+              <button class="btn-qty" (click)="modificarCantidad(prod, 1)">+</button>
+            </div>
+          </td>
+          <td>
+            @if (prod.stockActual === 0) {
+              <span class="badge-status status-agotado">Agotado</span>
+            } @else if ((prod.stockActual ?? 0) < 10) {
+              <span class="badge-status status-critico">Stock Bajo</span>
+            } @else {
+              <span class="badge-status status-normal">Disponible</span>
+            }
+          </td>
+          <td class="col-acciones">
+            <button class="btn-icon btn-edit" (click)="editar.emit(prod)" title="Editar">✏️</button>
+            <button class="btn-icon btn-delete" (click)="prod.id !== undefined && eliminar.emit(prod.id)" title="Eliminar">🗑️</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="7" class="empty-state">No se encontraron productos registrados.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

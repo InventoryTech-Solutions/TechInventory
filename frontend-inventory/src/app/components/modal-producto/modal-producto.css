@@ -1,0 +1,59 @@
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(5, 8, 22, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: #0f172a;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 16px;
+  width: 90%; max-width: 500px;
+  padding: 1.5rem; color: #f8fafc;
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.25);
+}
+
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.8rem;
+}
+
+.modal-header h3 { margin: 0; color: #c084fc; }
+
+.btn-close {
+  background: transparent; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer;
+}
+
+.form-group { margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.form-row { display: flex; gap: 1rem; }
+.form-row .form-group { flex: 1; }
+
+label { font-size: 0.85rem; color: #94a3b8; }
+
+input, select {
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 8px; padding: 0.6rem 0.8rem;
+  color: #f8fafc; outline: none;
+}
+
+input:focus, select:focus {
+  border-color: #22d3ee; box-shadow: 0 0 8px rgba(34, 211, 238, 0.3);
+}
+
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 1.5rem;
+}
+
+.btn-primario {
+  background: linear-gradient(90deg, #a855f7, #6366f1);
+  color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: bold; cursor: pointer;
+}
+
+.btn-secundario {
+  background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);
+  padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer;
+}

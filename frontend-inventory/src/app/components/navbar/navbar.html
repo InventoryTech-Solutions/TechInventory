@@ -4,10 +4,8 @@
   </div>
 
   <div class="nav-links">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Catálogo</a>
-    @if (authService.isLoggedIn()) {
-      <a routerLink="/gestion" routerLinkActive="active">Gestión de Inventario</a>
-    }
+    <a routerLink="/catalogo" routerLinkActive="active">Catálogo</a>
+    <a routerLink="/gestion" routerLinkActive="active">Gestión de Inventario</a>
   </div>
 
   <div class="auth-section">

@@ -27,7 +27,8 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    // Permitir nulo para no romper el guardado si el formulario no envía SKU
+    @Column(nullable = true)
     private String sku;
 
     @Column(nullable = false)
@@ -40,4 +41,9 @@ public class Producto {
 
     @Column(nullable = false)
     private Integer stock;
+
+    // Campos adicionados para coincidir con el formulario de Angular
+    private String codigoBarras;
+    private String ubicacionBodega;
+    private String urlImagen;
 }

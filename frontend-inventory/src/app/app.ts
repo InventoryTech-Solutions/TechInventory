@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar';
-import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -11,5 +10,5 @@ import { AuthService } from './services/auth.service';
   styleUrl: './app.css'
 })
 export class AppComponent {
-  constructor(public authService: AuthService) {}
+  title = 'frontend-inventory';
 }
