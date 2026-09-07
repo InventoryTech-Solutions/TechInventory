@@ -36,6 +36,7 @@ npm install
 ng serve
 
 ## Ejecutar Backend
-cd backend-inventory
-./mvnw spring-boot:run
+1 paso --> cd backend-inventory
+2 paso --> cd backend-inventory
+3 paso --> ./mvnw spring-boot:run
 
