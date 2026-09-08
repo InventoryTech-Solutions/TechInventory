@@ -7,9 +7,12 @@
 /bazel-out
 
 # Node
-/node_modules
+/node_modules/
 npm-debug.log
 yarn-error.log
+
+# Angular build & cache (Optimizado para ignorar toda la carpeta .angular)
+/.angular/
 
 # IDEs and editors
 .idea/
@@ -29,8 +32,12 @@ yarn-error.log
 !.vscode/mcp.json
 .history/*
 
+# Environment & Credentials (Agregado para seguridad)
+.env
+*.env
+src/environments/environment.prod.ts
+
 # Miscellaneous
-/.angular/cache
 .sass-cache/
 /connect.lock
 /coverage
