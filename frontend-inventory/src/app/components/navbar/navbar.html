@@ -9,11 +9,12 @@
   </div>
 
   <div class="auth-section">
-    @if (authService.isLoggedIn()) {
+    @if (estaLogueado) {
       <span class="user-name">👤 {{ usuarioNombre }}</span>
       <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
     } @else {
-      <button class="btn-login" (click)="iniciarSesion()">Iniciar Sesión</button>
+      <a routerLink="/registro" class="btn-registro">Registrarse</a>
+      <a routerLink="/login" class="btn-login">Iniciar Sesión</a>
     }
   </div>
 </nav>
