@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InventarioService } from '../../services/inventario.service';
+import { AuthService } from '../../services/auth.service';
 import { Producto } from '../../models/producto.model';
 import { TablaInventarioComponent } from '../tabla-inventario/tabla-inventario';
 import { ModalProductoComponent } from '../modal-producto/modal-producto';
@@ -21,10 +22,17 @@ export class GestionInventarioComponent implements OnInit {
   mostrarModal: boolean = false;
   productoEditar: Producto | null = null;
 
-  constructor(private inventarioService: InventarioService) {}
+  constructor(
+    private inventarioService: InventarioService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.cargarProductos();
+  }
+
+  get esAdmin(): boolean {
+    return this.authService.esAdmin();
   }
 
   cargarProductos(): void {
@@ -34,7 +42,6 @@ export class GestionInventarioComponent implements OnInit {
     });
   }
 
-  // KPIs
   get totalProductos(): number {
     return this.productos.length;
   }
@@ -47,10 +54,9 @@ export class GestionInventarioComponent implements OnInit {
     return this.productos.reduce((acc, p) => acc + (p.precio * (p.stockActual ?? 0)), 0);
   }
 
-  // Filtrado
   get productosFiltrados(): Producto[] {
     return this.productos.filter(p => {
-      const coincideTexto = p.nombre.toLowerCase().includes(this.filtroTexto.toLowerCase());
+      const coincideTexto = (p.nombre ?? '').toLowerCase().includes(this.filtroTexto.toLowerCase());
       const stock = p.stockActual ?? 0;
       
       let coincideEstado = true;
@@ -61,7 +67,6 @@ export class GestionInventarioComponent implements OnInit {
     });
   }
 
-  // Operaciones CRUD
   abrirModalCrear(): void {
     this.productoEditar = null;
     this.mostrarModal = true;

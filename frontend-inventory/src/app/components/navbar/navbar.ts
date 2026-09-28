@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { AuthLocalService } from '../../services/auth-local.service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,31 +13,26 @@ import { AuthLocalService } from '../../services/auth-local.service';
 export class NavbarComponent implements OnInit {
   usuario: any = null;
 
-  constructor(
-    public authService: AuthService,
-    public authLocalService: AuthLocalService
-  ) {}
+  constructor(public authService: AuthService) {}
 
   ngOnInit(): void {
     this.usuario = this.authService.getAccount();
   }
 
   get estaLogueado(): boolean {
-    return this.authService.isLoggedIn() || this.authLocalService.isLoggedIn();
+    return this.authService.isLoggedIn();
   }
 
   get usuarioNombre(): string {
-    const usuarioLocal = this.authLocalService.getUsuario();
-    if (usuarioLocal) return usuarioLocal.nombre;
     return this.usuario?.name || this.usuario?.nombre || 'Usuario';
   }
 
+  async iniciarSesion(): Promise<void> {
+    await this.authService.login();
+  }
+
   async cerrarSesion(): Promise<void> {
-    if (this.authLocalService.isLoggedIn()) {
-      this.authLocalService.logout();
-    } else {
-      await this.authService.logout();
-    }
+    await this.authService.logout();
     this.usuario = null;
   }
 }

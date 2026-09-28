@@ -1,75 +1,68 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthService } from './auth.service';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Producto } from '../models/producto.model';
-import { Observable, from, of } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+function mapearProducto(p: any): Producto {
+  return { ...p, stockActual: p.stock };
+}
+
+export interface ItemReserva {
+  productoId: number;
+  cantidad: number;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventarioService {
   private apiUrl = `${environment.apiGatewayUrl}/productos`;
+  private apiUrlPublico = `${environment.apiGatewayUrl}/public/productos`;
+  private apiUrlReservas = `${environment.apiGatewayUrl}/reservas`;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient) {}
 
-  // Genera los headers básicos y agrega el Token si el usuario inició sesión
-  private getHeaders(): Observable<HttpHeaders> {
-    return from(this.authService.getToken()).pipe(
-      map(token => {
-        let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        if (token) {
-          headers = headers.set('Authorization', `Bearer ${token}`);
-        }
-        return headers;
-      }),
-      catchError(() => {
-        // Si no hay sesión iniciada, retorna las cabeceras estándar para pruebas locales
-        return of(new HttpHeaders({ 'Content-Type': 'application/json' }));
-      })
-    );
+  getProductosPublicos(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrlPublico);
   }
 
-  // Obtenemos la lista completa de productos
+  reservar(items: ItemReserva[]): Observable<any> {
+    return this.http.post<any>(this.apiUrlReservas, { items });
+  }
+
   getProductos(): Observable<Producto[]> {
-    return this.getHeaders().pipe(
-      switchMap(headers => this.http.get<Producto[]>(this.apiUrl, { headers }))
+    return this.http.get<any[]>(this.apiUrl).pipe(
+      map(lista => lista.map(mapearProducto))
     );
   }
 
-  // Obtener producto por ID
   getProductoPorId(id: number): Observable<Producto> {
-    return this.getHeaders().pipe(
-      switchMap(headers => this.http.get<Producto>(`${this.apiUrl}/${id}`, { headers }))
+    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+      map(mapearProducto)
     );
   }
 
-  // Crear un nuevo producto en inventario
   crearProducto(producto: Partial<Producto>): Observable<Producto> {
-    return this.getHeaders().pipe(
-      switchMap(headers => this.http.post<Producto>(this.apiUrl, producto, { headers }))
+    return this.http.post<any>(this.apiUrl, producto).pipe(
+      map(mapearProducto)
     );
   }
 
-  // Actualizar stock o información del producto
   actualizarProducto(id: number, producto: Partial<Producto>): Observable<Producto> {
-    return this.getHeaders().pipe(
-      switchMap(headers => this.http.put<Producto>(`${this.apiUrl}/${id}`, producto, { headers }))
+    return this.http.put<any>(`${this.apiUrl}/${id}`, producto).pipe(
+      map(mapearProducto)
     );
   }
 
-  // Actualización rápida de stock
   actualizarStock(id: number, nuevoStock: number): Observable<Producto> {
-    return this.getHeaders().pipe(
-      switchMap(headers => this.http.patch<Producto>(`${this.apiUrl}/${id}/stock`, { stock: nuevoStock }, { headers }))
+    return this.http.patch<any>(`${this.apiUrl}/${id}/stock`, { stock: nuevoStock }).pipe(
+      map(mapearProducto)
     );
   }
 
-  // Eliminar producto
   eliminarProducto(id: number): Observable<void> {
-    return this.getHeaders().pipe(
-      switchMap(headers => this.http.delete<void>(`${this.apiUrl}/${id}`, { headers }))
-    );
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

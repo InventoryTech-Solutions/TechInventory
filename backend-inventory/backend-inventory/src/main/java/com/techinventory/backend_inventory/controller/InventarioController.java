@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -52,6 +53,14 @@ public class InventarioController {
         Producto productoActualizado = inventarioService.guardarProducto(producto);
         return ResponseEntity.ok(productoActualizado);
     }
+
+    @PatchMapping("/{id}/stock")
+    public ResponseEntity<Producto> actualizarStock(@PathVariable Long id, @RequestBody StockRequest request) {
+        Producto productoActualizado = inventarioService.actualizarStock(id, request.stock());
+        return ResponseEntity.ok(productoActualizado);
+    }
+
+    public record StockRequest(Integer stock) {}
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {

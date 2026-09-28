@@ -33,7 +33,16 @@ export class ModalProductoComponent implements OnInit {
 
   onSubmit(): void {
     if (this.productoForm.valid) {
-      this.guardar.emit(this.productoForm.value);
+      const valores = this.productoForm.value;
+
+      // El backend espera el campo "stock", el formulario usa "stockActual"
+      const datosParaBackend = {
+        ...valores,
+        stock: valores.stockActual
+      };
+      delete datosParaBackend.stockActual;
+
+      this.guardar.emit(datosParaBackend);
     }
   }
 

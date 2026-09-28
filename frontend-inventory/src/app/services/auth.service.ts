@@ -17,6 +17,8 @@ export class AuthService {
     }
   });
 
+  private rolesCache: string[] = [];
+
   async init(): Promise<void> {
     await this.msalInstance.initialize();
     await this.msalInstance.handleRedirectPromise();
@@ -48,7 +50,32 @@ export class AuthService {
       throw new Error('Redirigiendo para renovar token...');
     });
 
+    // Guardamos los roles del token para consultarlos de forma síncrona en la UI
+    this.rolesCache = this.decodificarRoles(response.accessToken);
+
     return response.accessToken;
+  }
+
+  // Decodifica solo la parte de claims del JWT (sin validar firma; eso ya lo hace el backend)
+  private decodificarRoles(token: string): string[] {
+    try {
+      const payload = token.split('.')[1];
+      const jsonPayload = decodeURIComponent(
+        atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const claims = JSON.parse(jsonPayload);
+      return claims.roles ?? [];
+    } catch {
+      return [];
+    }
+  }
+
+  // Solo para uso visual en la UI (ocultar/mostrar botones). La seguridad real la aplica el backend.
+  esAdmin(): boolean {
+    return this.rolesCache.includes('Admin');
   }
 
   getAccount() {

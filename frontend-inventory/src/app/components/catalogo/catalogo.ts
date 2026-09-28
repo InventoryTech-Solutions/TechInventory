@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule, CurrencyPipe, registerLocaleData } from '@angular/common';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import localeEsCl from '@angular/common/locales/es-CL';
-
-// Registrar la configuración regional de Chile para usar '.' en miles
-registerLocaleData(localeEsCl, 'es-CL');
+import { InventarioService } from '../../services/inventario.service';
+import { AuthService } from '../../services/auth.service';
+import { Subscription, interval } from 'rxjs';
 
 export interface Producto {
   id: number;
@@ -27,66 +26,59 @@ export interface ItemCarrito {
   templateUrl: './catalogo.html',
   styleUrl: './catalogo.css'
 })
-export class CatalogoComponent implements OnInit {
+export class CatalogoComponent implements OnInit, OnDestroy {
 
-  productos: Producto[] = [
-    { 
-      id: 1, 
-      nombre: 'Laptop Pro 15"', 
-      categoria: 'Electrónica', 
-      precio: 1200000, 
-      stock: 8, 
-      imagenUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80' 
-    },
-    { 
-      id: 2, 
-      nombre: 'Teclado Mecánico RGB', 
-      categoria: 'Accesorios', 
-      precio: 85000, 
-      stock: 15, 
-      imagenUrl: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&q=80' 
-    },
-    { 
-      id: 3, 
-      nombre: 'Monitor 4K 27"', 
-      categoria: 'Electrónica', 
-      precio: 350000, 
-      stock: 4, 
-      imagenUrl: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500&q=80' 
-    },
-    { 
-      id: 4, 
-      nombre: 'Mouse Inalámbrico', 
-      categoria: 'Accesorios', 
-      precio: 45000, 
-      stock: 20, 
-      imagenUrl: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500&q=80' 
-    },
-    { 
-      id: 5, 
-      nombre: 'Silla Ergonómica', 
-      categoria: 'Oficina', 
-      precio: 250000, 
-      stock: 2, 
-      imagenUrl: 'https://images.unsplash.com/photo-1505797149-43b0069ec26b?w=500&q=80' 
-    }
-  ];
-
-  categorias: string[] = ['Todas', 'Electrónica', 'Accesorios', 'Oficina'];
-  
+  productos: Producto[] = [];
+  categorias: string[] = ['Todas'];
   filtroTexto: string = '';
   categoriaSeleccionada: string = 'Todas';
-  
   productoSeleccionado: Producto | null = null;
-  
   carrito: ItemCarrito[] = [];
   mostrarCarritoModal: boolean = false;
 
-  ngOnInit(): void {}
+  private placeholderImg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"%3E%3Crect width="300" height="200" fill="%23e5e7eb"/%3E%3Ctext x="150" y="105" font-family="sans-serif" font-size="16" fill="%236b7280" text-anchor="middle"%3ESin imagen%3C/text%3E%3C/svg%3E';
+
+  private subscripcion?: Subscription;
+
+  constructor(
+    private inventarioService: InventarioService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    this.cargarProductos();
+    // Refresca el stock cada 5 segundos mientras el catálogo está abierto
+    this.subscripcion = interval(5000).subscribe(() => this.cargarProductos());
+  }
+
+  ngOnDestroy(): void {
+    this.subscripcion?.unsubscribe();
+  }
+
+  cargarProductos(): void {
+    this.inventarioService.getProductosPublicos().subscribe({
+      next: (data) => this.mapearYAsignar(data),
+      error: (err) => console.error('Error al cargar el catálogo', err)
+    });
+  }
+
+  private mapearYAsignar(data: any[]): void {
+    this.productos = data.map((p: any) => ({
+      id: p.id,
+      nombre: p.nombre,
+      categoria: p.categoria,
+      precio: p.precio,
+      stock: p.stock,
+      imagenUrl: p.urlImagen || this.placeholderImg
+    }));
+
+    const categoriasUnicas = Array.from(new Set(this.productos.map(p => p.categoria)));
+    this.categorias = ['Todas', ...categoriasUnicas];
+  }
 
   get productosFiltrados(): Producto[] {
     return this.productos.filter(p => {
-      const coincideTexto = p.nombre.toLowerCase().includes(this.filtroTexto.toLowerCase());
+      const coincideTexto = (p.nombre ?? '').toLowerCase().includes(this.filtroTexto.toLowerCase());
       const coincideCategoria = this.categoriaSeleccionada === 'Todas' || p.categoria === this.categoriaSeleccionada;
       return coincideTexto && coincideCategoria;
     });
@@ -112,7 +104,7 @@ export class CatalogoComponent implements OnInit {
     if (producto.stock <= 0) return;
 
     const itemExistente = this.carrito.find(item => item.producto.id === producto.id);
-    
+
     if (itemExistente) {
       if (itemExistente.cantidad < producto.stock) {
         itemExistente.cantidad++;
@@ -122,7 +114,7 @@ export class CatalogoComponent implements OnInit {
     } else {
       this.carrito.push({ producto, cantidad: 1 });
     }
-    
+
     this.cerrarModal();
   }
 
@@ -139,8 +131,30 @@ export class CatalogoComponent implements OnInit {
   }
 
   finalizarPedido(): void {
-    alert('¡Reserva realizada con éxito!');
-    this.carrito = [];
-    this.cerrarCarrito();
+    if (!this.authService.isLoggedIn()) {
+      alert('Debes iniciar sesión para confirmar la reserva.');
+      return;
+    }
+
+    const items = this.carrito.map(i => ({ productoId: i.producto.id, cantidad: i.cantidad }));
+
+    this.inventarioService.reservar(items).subscribe({
+      next: () => {
+        alert('¡Reserva realizada con éxito!');
+        this.carrito = [];
+        this.cerrarCarrito();
+        this.cargarProductos();
+      },
+      error: (err) => {
+        if (err.status === 401) {
+          alert('Tu sesión expiró. Inicia sesión nuevamente.');
+        } else if (err.status === 409) {
+          alert(err.error?.mensaje || 'No hay stock suficiente.');
+          this.cargarProductos();
+        } else {
+          alert('No se pudo completar la reserva. Intenta nuevamente.');
+        }
+      }
+    });
   }
 }

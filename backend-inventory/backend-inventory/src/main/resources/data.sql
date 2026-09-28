@@ -1,3 +1,5 @@
-INSERT INTO productos (sku, nombre, categoria, precio, stock) VALUES ('SKU-1001', 'Smartphone Pro Max 128GB', 'Celulares', 899.99, 15);
-INSERT INTO productos (sku, nombre, categoria, precio, stock) VALUES ('SKU-1002', 'Laptop Gamer 16GB RAM', 'Computadores', 1299.50, 8);
-INSERT INTO productos (sku, nombre, categoria, precio, stock) VALUES ('SKU-1003', 'Audífonos Bluetooth Noise Cancelling', 'Accesorios', 199.00, 30);
+INSERT INTO productos (sku, nombre, categoria, precio, stock, url_imagen) VALUES ('SKU-1004', 'Laptop Pro 15"', 'Electrónica', 1200000, 8, 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80');
+INSERT INTO productos (sku, nombre, categoria, precio, stock, url_imagen) VALUES ('SKU-1005', 'Teclado Mecánico RGB', 'Accesorios', 85000, 15, 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&q=80');
+INSERT INTO productos (sku, nombre, categoria, precio, stock, url_imagen) VALUES ('SKU-1006', 'Monitor 4K 27"', 'Electrónica', 350000, 4, 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500&q=80');
+INSERT INTO productos (sku, nombre, categoria, precio, stock, url_imagen) VALUES ('SKU-1007', 'Mouse Inalámbrico', 'Accesorios', 45000, 20, 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500&q=80');
+INSERT INTO productos (sku, nombre, categoria, precio, stock, url_imagen) VALUES ('SKU-1008', 'Silla Ergonómica', 'Oficina', 250000, 2, 'https://images.unsplash.com/photo-1505797149-43b0069ec26b?w=500&q=80');

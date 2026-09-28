@@ -1,14 +1,14 @@
 <div class="gestion-container">
-  <!-- Encabezado -->
   <div class="gestion-header">
     <div>
       <h2>Gestión de Inventario</h2>
       <p class="subtitulo">Sincronización y control de stock E-Tech Logistics</p>
     </div>
-    <button class="btn-nuevo" (click)="abrirModalCrear()">+ Nuevo Producto</button>
+    @if (esAdmin) {
+      <button class="btn-nuevo" (click)="abrirModalCrear()">+ Nuevo Producto</button>
+    }
   </div>
 
-  <!-- KPIs Métricos -->
   <div class="kpi-grid">
     <div class="kpi-card">
       <span class="kpi-title">Total Productos</span>
@@ -24,7 +24,6 @@
     </div>
   </div>
 
-  <!-- Filtros -->
   <div class="filtros-bar">
     <input type="text" [(ngModel)]="filtroTexto" placeholder="Buscar por nombre..." class="search-input" />
     
@@ -35,7 +34,6 @@
     </select>
   </div>
 
-  <!-- Tabla Hijo -->
   <app-tabla-inventario
     [productos]="productosFiltrados"
     (editar)="abrirModalEditar($event)"
@@ -43,7 +41,6 @@
     (cambiarStock)="actualizarStockEvento($event)"
   ></app-tabla-inventario>
 
-  <!-- Modal Hijo -->
   @if (mostrarModal) {
     <app-modal-producto
       [productoEditar]="productoEditar"

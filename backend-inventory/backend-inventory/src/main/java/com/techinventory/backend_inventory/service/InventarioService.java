@@ -13,6 +13,8 @@ import com.techinventory.backend_inventory.repository.ProductoRepository;
 @Service
 public class InventarioService {
 
+    public record ItemReserva(Long productoId, Integer cantidad) {}
+
     private final ProductoRepository productoRepository;
     private final MovimientoInventarioRepository movimientoRepository;
 
@@ -30,13 +32,11 @@ public class InventarioService {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con el ID: " + id));
     }
 
-    // Nuevo método para CREAR/ACTUALIZAR
     @Transactional
     public Producto guardarProducto(Producto producto) {
         return productoRepository.save(producto);
     }
 
-    // Nuevo método para ELIMINAR
     @Transactional
     public void eliminarProducto(Long id) {
         productoRepository.deleteById(id);
@@ -48,7 +48,7 @@ public class InventarioService {
 
         if ("SALIDA".equalsIgnoreCase(tipo) || "DESPACHO".equalsIgnoreCase(tipo)) {
             if (producto.getStock() < cantidad) {
-                throw new IllegalArgumentException("Stock insuficiente para realizar el despacho.");
+                throw new IllegalArgumentException("Stock insuficiente para " + producto.getNombre());
             }
             producto.setStock(producto.getStock() - cantidad);
         } else if ("ENTRADA".equalsIgnoreCase(tipo)) {
@@ -67,5 +67,26 @@ public class InventarioService {
                 .build();
 
         return movimientoRepository.save(movimiento);
+    }
+
+    @Transactional
+    public Producto actualizarStock(Long id, Integer nuevoStock) {
+        Producto producto = obtenerProductoPorId(id);
+        producto.setStock(nuevoStock);
+        return productoRepository.save(producto);
+    }
+
+    // Reserva desde el catálogo: descuenta stock de todos los ítems o de ninguno
+    @Transactional
+    public void reservar(List<ItemReserva> items) {
+        if (items == null || items.isEmpty()) {
+            throw new IllegalArgumentException("La reserva no tiene productos");
+        }
+        for (ItemReserva item : items) {
+            if (item.cantidad() == null || item.cantidad() <= 0) {
+                throw new IllegalArgumentException("Cantidad inválida");
+            }
+            registrarMovimiento(item.productoId(), item.cantidad(), "SALIDA", "Reserva desde catálogo");
+        }
     }
 }

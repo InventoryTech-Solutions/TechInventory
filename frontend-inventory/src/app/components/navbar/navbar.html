@@ -13,8 +13,7 @@
       <span class="user-name">👤 {{ usuarioNombre }}</span>
       <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
     } @else {
-      <a routerLink="/registro" class="btn-registro">Registrarse</a>
-      <a routerLink="/login" class="btn-login">Iniciar Sesión</a>
+      <button class="btn-login" (click)="iniciarSesion()">Iniciar Sesión</button>
     }
   </div>
 </nav>
