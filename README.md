@@ -40,3 +40,6 @@ ng serve
 2 paso --> cd backend-inventory
 3 paso --> ./mvnw spring-boot:run
 
+## Rama rabbit
+Tiene configuración local para acelerar desarrollo de rabbitmq.
+
